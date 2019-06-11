@@ -21,12 +21,16 @@
 {
     cp base-file.in base-aux.in
     # $1 > $2
-    j=35
+    total=35
+    j=$total
     for (( i=$1; i >= $2; i--))
     do
+	pct=($( awk "BEGIN { print ($i / $total) * 100 }"))
 	sed -i "s/1 3 $j/1 3 $i/" base-aux.in
 	./Ford_Fulkerson < base-aux.in > teste"$i".dat
+	flw=($(sed -n 's/^total flow is//p' teste"$i".dat))
+	echo $pct $flw >> "$1_$2.dat"
 	j=$i
     done
-    rm -rf base-aux.in
+    rm -rf base-aux.in tes*dat
 }
