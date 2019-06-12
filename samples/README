@@ -1,0 +1,8 @@
+Apos gerar novos arquivos úteis dar comandos:
+
+git add -A # Adiciona ou remove todas as alterações de arquivos realizadas desde o último commit
+git commit -m "aqui colocamos o comentario para o upload"
+git push origin testes-alexandre #ou outro branch que se queira.
+alexf-ramos
+senha
+
