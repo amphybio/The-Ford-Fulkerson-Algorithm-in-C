@@ -62,7 +62,8 @@
 	fi
 	rm -rf base-aux.in temp*.dat
     done < $3
-    paste *_*.dat | column -s $'\t' -tn > networkFlow-"$1"-"$2".dat
+    paste 1_3.dat 2_4.dat 1_2.dat 3_2.dat 4_3.dat | column -s $'\t' -tn > networkFlow-"$1"-"$2".dat
+    #paste *_*dat | column -s $'\t' -tn > networkFlow-"$1"-"$2".dat
     # 1. deletar a linha referente a aresta analisada -> equivale a fluxo nulo na aresta para o programa gerando o novo arquivo base-aux.in 
     # 2. rodar o FF
     # 3. gerar flw
