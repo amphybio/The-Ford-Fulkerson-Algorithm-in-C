@@ -1,0 +1,26 @@
+#!/bin/bash
+
+#===============================================================================
+#
+#          FILE:  ---
+#
+#         USAGE:  ---
+#
+#   DESCRIPTION:
+#
+#       OPTIONS:  ---
+#  REQUIREMENTS:  ---
+#          BUGS:  ---
+#         NOTES:  ---
+#        AUTHOR:  ---
+#       COMPANY:  ---
+#       VERSION:  ---
+#       CREATED:  ---
+#      REVISION:  ---
+#===============================================================================
+#
+{
+    IN="$1".dat
+    OUT="$1".png
+    gnuplot -e "inputfile='$IN'; outputfile='$OUT';" networkFlow.plt
+}

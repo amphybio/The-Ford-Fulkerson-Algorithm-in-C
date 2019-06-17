@@ -1,0 +1,71 @@
+#!/bin/bash
+
+#===============================================================================
+#
+#          FILE:  ---
+#
+#         USAGE:  ---
+#
+#   DESCRIPTION:
+#
+#       OPTIONS:  ---
+#  REQUIREMENTS:  ---
+#          BUGS:  ---
+#         NOTES:  ---
+#        AUTHOR:  ---
+#       COMPANY:  ---
+#       VERSION:  ---
+#       CREATED:  ---
+#      REVISION:  Alexandre 12/6/19
+#===============================================================================
+#
+{
+    # argumentos 1 e 2 do script são os nós de inicio e fim de uma dada aresta
+    # $1 > $2
+    # usar sed para verificar se as arestas usadas como argumento possuem fluxo inicial nao nulo.
+    # usar o sed para copiar o valor do fluxo maximo atual da aresta
+    # atribuir esse valor a variavel total
+    # no loop, i varia de $total até 1
+    # --------
+    #$1 FONTE
+    #$2 SORVEDOURO
+    #$3 ARQUIVO
+    cont=1
+    while read line
+    do
+	cp "$3" base-aux.in
+	if [ $cont -eq 1 ]
+	then
+	    read line
+	    ((cont++))
+	fi
+	n1=$(echo "$line" | awk '{print $1}')
+	n2=$(echo "$line" | awk '{print $2}')
+	n3=$(echo "$line" | awk '{print $3}')
+	j=$n3
+	total=$n3
+	if [[ $n1 != $1 && $n2 != $2 ]]
+	then
+	    for (( i=$total; i>0; i--))
+            do
+            	pct=($( awk "BEGIN { print ($i / $total ) * 100 }"))
+            	sed -i "s/$n1 $n2 $j/$n1 $n2 $i/" base-aux.in
+            	./Ford_Fulkerson < base-aux.in > temp"$i".dat
+            	flw=($(sed -n 's/^total flow is//p' temp"$i".dat))
+            	echo $pct $'\t' $flw >> "$n1"_"$n2".dat
+            	j=$i
+            done
+	    sed -i "/$n1 $n2 $j/d" base-aux.in
+            ./Ford_Fulkerson < base-aux.in > temp0.dat
+            flw=($(sed -n 's/^total flow is//p' temp0.dat))
+	    echo "0" $'\t' $flw >> "$n1"_"$n2".dat
+	fi
+	rm -rf base-aux.in temp*.dat
+    done < $3
+    paste 1_3.dat 2_4.dat 1_2.dat 3_2.dat 4_3.dat | column -s $'\t' -tn > networkFlow-"$1"-"$2".dat
+    #paste *_*dat | column -s $'\t' -tn > networkFlow-"$1"-"$2".dat
+    # 1. deletar a linha referente a aresta analisada -> equivale a fluxo nulo na aresta para o programa gerando o novo arquivo base-aux.in 
+    # 2. rodar o FF
+    # 3. gerar flw
+    # 4. adendar os valores $pct #flw no arquivo $1_$2.dat
+}
