@@ -22,9 +22,5 @@
 {
     IN="$1".dat
     OUT="$1".png
-<<<<<<< HEAD
-    gnuplot -e "inputfile='$IN'; outputfile='$OUT';" networkFlowTRI.plt
-=======
-    gnuplot -e "inputfile='$IN'; outputfile='$OUT';" networkFlow.plt
->>>>>>> d31f20cbaa7089d350a0e8fd296cd05052792556
+    gnuplot -e "inputfile='$IN'; outputfile='$OUT';" networkFlowNested.plt
 }

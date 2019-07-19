@@ -1,0 +1,201 @@
+#!/bin/bash
+
+#===============================================================================
+#
+#          FILE:  ---
+#
+#         USAGE:  ---
+#
+#   DESCRIPTION:
+#
+#       OPTIONS:  ---
+#  REQUIREMENTS:  ---
+#          BUGS:  ---
+#         NOTES:  ---
+#        AUTHOR:  ---
+#       COMPANY:  ---
+#       VERSION:  ---
+#       CREATED:  ---
+#      REVISION:  ---
+#===============================================================================
+#
+{
+  #$1 FONTE
+  #$2 SORVEDOURO
+  #$3 ARQUIVO
+  contA=1
+  while read line
+  do
+    cp -rf "$3" base-aux.in
+    if [ $contA -eq 1 ]
+    then
+        read line
+        ((contA++))
+    fi
+    n1A=$(echo "$line" | awk '{print $1}')
+    n2A=$(echo "$line" | awk '{print $2}')
+    n3A=$(echo "$line" | awk '{print $3}')
+    if [[ $n1A != $1 && $n2A != $2 ]]
+    then
+        contB=1
+        while read line
+        do
+          cp -rf base-aux.in baux.in
+          if [ $contB -eq 1 ]
+          then
+              read line
+              ((contB++))
+          fi
+          n1B=$(echo "$line" | awk '{print $1}')
+          n2B=$(echo "$line" | awk '{print $2}')
+          n3B=$(echo "$line" | awk '{print $3}')
+          if [[ $n1B != $1 && $n2B != $2 ]] \
+                 && [[ $n1A != $n1B || $n2A != $n2B ]]
+          then
+              contC=1
+              while read line
+              do
+                cp -rf baux.in baux3.in
+                if [ $contC -eq 1 ]
+                then
+                    read line
+                    ((contC++))
+                fi
+                n1C=$(echo "$line" | awk '{print $1}')
+                n2C=$(echo "$line" | awk '{print $2}')
+                n3C=$(echo "$line" | awk '{print $3}')
+                if [[ $n1C != $1 && $n2C != $2 ]] \
+                       && [[ $n1A != $n1C || $n2A != $n2C ]] \
+                       && [[ $n1B != $n1C || $n2B != $n2C ]]
+                then
+                    contD=1
+                    while read line
+                    do
+                      cp -rf baux3.in baux4.in
+                      if [ $contD -eq 1 ]
+                      then
+                          read line
+                          ((contD++))
+                      fi
+                      n1D=$(echo "$line" | awk '{print $1}')
+                      n2D=$(echo "$line" | awk '{print $2}')
+                      n3D=$(echo "$line" | awk '{print $3}')
+                      if [[ $n1D != $1 && $n2D != $2 ]] \
+                             && [[ $n1A != $n1D || $n2A != $n2D ]] \
+                             && [[ $n1B != $n1D || $n2B != $n2D ]] \
+                             && [[ $n1C != $n1D || $n2C != $n2D ]]
+                      then
+                          if [ ! -f "$n1A"_"$n2A"-"$n1B"_"$n2B"-"$n1D"_"$n2D"-"$n1C"_"$n2C".dat ] \
+                          && [ ! -f "$n1A"_"$n2A"-"$n1C"_"$n2C"-"$n1B"_"$n2B"-"$n1D"_"$n2D".dat ] \
+                          && [ ! -f "$n1A"_"$n2A"-"$n1C"_"$n2C"-"$n1D"_"$n2D"-"$n1B"_"$n2B".dat ] \
+                          && [ ! -f "$n1A"_"$n2A"-"$n1D"_"$n2D"-"$n1B"_"$n2B"-"$n1C"_"$n2C".dat ] \
+                          && [ ! -f "$n1A"_"$n2A"-"$n1D"_"$n2D"-"$n1C"_"$n2C"-"$n1B"_"$n2B".dat ] \
+                          && [ ! -f "$n1B"_"$n2B"-"$n1D"_"$n2D"-"$n1A"_"$n2A"-"$n1C"_"$n2C".dat ] \
+                          && [ ! -f "$n1B"_"$n2B"-"$n1A"_"$n2A"-"$n1C"_"$n2C"-"$n1D"_"$n2D".dat ] \
+                          && [ ! -f "$n1B"_"$n2B"-"$n1A"_"$n2A"-"$n1D"_"$n2D"-"$n1C"_"$n2C".dat ] \
+                          && [ ! -f "$n1B"_"$n2B"-"$n1C"_"$n2C"-"$n1A"_"$n2A"-"$n1D"_"$n2D".dat ] \
+                          && [ ! -f "$n1B"_"$n2B"-"$n1C"_"$n2C"-"$n1D"_"$n2D"-"$n1A"_"$n2A".dat ] \
+                          && [ ! -f "$n1B"_"$n2B"-"$n1D"_"$n2D"-"$n1C"_"$n2C"-"$n1A"_"$n2A".dat ] \
+                          && [ ! -f "$n1C"_"$n2C"-"$n1A"_"$n2A"-"$n1B"_"$n2B"-"$n1D"_"$n2D".dat ] \
+                          && [ ! -f "$n1C"_"$n2C"-"$n1A"_"$n2A"-"$n1D"_"$n2D"-"$n1B"_"$n2B".dat ] \
+                          && [ ! -f "$n1C"_"$n2C"-"$n1B"_"$n2B"-"$n1A"_"$n2A"-"$n1D"_"$n2D".dat ] \
+                          && [ ! -f "$n1C"_"$n2C"-"$n1B"_"$n2B"-"$n1D"_"$n2D"-"$n1A"_"$n2A".dat ] \
+                          && [ ! -f "$n1C"_"$n2C"-"$n1D"_"$n2D"-"$n1A"_"$n2A"-"$n1B"_"$n2B".dat ] \
+                          && [ ! -f "$n1C"_"$n2C"-"$n1D"_"$n2D"-"$n1B"_"$n2B"-"$n1A"_"$n2A".dat ] \
+                          && [ ! -f "$n1D"_"$n2D"-"$n1A"_"$n2A"-"$n1B"_"$n2B"-"$n1C"_"$n2C".dat ] \
+                          && [ ! -f "$n1D"_"$n2D"-"$n1A"_"$n2A"-"$n1C"_"$n2C"-"$n1B"_"$n2B".dat ] \
+                          && [ ! -f "$n1D"_"$n2D"-"$n1B"_"$n2B"-"$n1A"_"$n2A"-"$n1C"_"$n2C".dat ] \
+                          && [ ! -f "$n1D"_"$n2D"-"$n1B"_"$n2B"-"$n1C"_"$n2C"-"$n1A"_"$n2A".dat ] \
+                          && [ ! -f "$n1D"_"$n2D"-"$n1C"_"$n2C"-"$n1A"_"$n2A"-"$n1B"_"$n2B".dat ] \
+                          && [ ! -f "$n1D"_"$n2D"-"$n1C"_"$n2C"-"$n1B"_"$n2B"-"$n1A"_"$n2A".dat ]
+                          then
+                              count=0
+                              zero=0
+                              if [[ $n3A -lt $n3B && $n3A -lt $n3C && $n3A -lt $n3D ]]
+                              then
+                                  zero=1
+                                  count=$n3A
+                              elif [[ $n3B -lt $n3A && $n3B -lt $n3C && $n3B -lt $n3D ]]
+                              then
+                                  zero=2
+                                  count=$n3B
+                              elif [[ $n3C -lt $n3A && $n3C -lt $n3B && $n3C -lt $n3D ]]
+                              then
+                                  zero=3
+                                  count=$n3C
+                              else
+                                  zero=4
+                                  count=$n3D
+                              fi
+                              cpd=$(( n3A + n3B + n3C + n3D ))
+                              flA=$n3A
+                              flB=$n3B
+                              flC=$n3C
+                              flD=$n3D
+                              jA=$n3A
+                              jB=$n3B
+                              jC=$n3C
+                              jD=$n3D
+                              for (( i=$count; i>0; i--))
+                              do
+                                pct=($( awk "BEGIN { print (($jA + $jB + $jC + $jD) / $cpd ) * 100 }"))
+                                sed -i "s/$n1A $n2A $flA/$n1A $n2A $jA/" baux4.in
+                                sed -i "s/$n1B $n2B $flB/$n1B $n2B $jB/" baux4.in
+                                sed -i "s/$n1C $n2C $flC/$n1C $n2C $jC/" baux4.in
+                                sed -i "s/$n1D $n2D $flD/$n1D $n2D $jD/" baux4.in
+                                ./Ford_Fulkerson < baux4.in > temp"$i".dat
+                                flw=($(sed -n 's/^total flow is//p' temp"$i".dat))
+                                echo $pct $'\t' $flw >> "$n1A"_"$n2A"-"$n1B"_"$n2B"-"$n1C"_"$n2C"-"$n1D"_"$n2D".dat
+                                flA=$jA
+                                ((jA--))
+                                flB=$jB
+                                ((jB--))
+                                flC=$jC
+                                ((jC--))
+                                flD=$jD
+                                ((jD--))
+                              done
+                              if [ $zero -eq 1 ]
+                              then
+                                  jA=0
+                                  sed -i "/$n1A $n2A $flA/d" baux4.in
+                                  sed -i "s/$n1B $n2B $flB/$n1B $n2B $jB/" baux4.in
+                                  sed -i "s/$n1C $n2C $flC/$n1C $n2C $jC/" baux4.in
+                                  sed -i "s/$n1D $n2D $flD/$n1D $n2D $jD/" baux4.in
+                              elif [ $zero -eq 2 ]
+                              then
+                                  jB=0
+                                  sed -i "/$n1B $n2B $flB/d" baux4.in
+                                  sed -i "s/$n1A $n2A $flA/$n1A $n2A $jA/" baux4.in
+                                  sed -i "s/$n1C $n2C $flC/$n1C $n2C $jC/" baux4.in
+                                  sed -i "s/$n1D $n2D $flD/$n1D $n2D $jD/" baux4.in
+                              elif [ $zero -eq 3 ]
+                              then
+                                jC=0
+                                sed -i "/$n1C $n2C $flC/d" baux4.in
+                                sed -i "s/$n1A $n2A $flA/$n1A $n2A $jA/" baux4.in
+                                sed -i "s/$n1B $n2B $flB/$n1B $n2B $jB/" baux4.in
+                                sed -i "s/$n1D $n2D $flD/$n1D $n2D $jD/" baux4.in
+                              else
+                                jD=0
+                                sed -i "/$n1D $n2D $flD/d" baux4.in
+                                sed -i "s/$n1A $n2A $flA/$n1A $n2A $jA/" baux4.in
+                                sed -i "s/$n1B $n2B $flB/$n1B $n2B $jB/" baux4.in
+                                sed -i "s/$n1C $n2C $flC/$n1C $n2C $jC/" baux4.in
+                              fi
+                              pct=($( awk "BEGIN { print (($jA + $jB + $jC + $jD) / $cpd ) * 100 }"))
+                              ./Ford_Fulkerson < baux4.in > temp0.dat
+                              flw=($(sed -n 's/^total flow is//p' temp0.dat))
+                              echo $pct $'\t' $flw >> "$n1A"_"$n2A"-"$n1B"_"$n2B"-"$n1C"_"$n2C"-"$n1D"_"$n2D".dat
+                          fi
+                      fi
+                    done < "baux3.in"
+                fi
+              done < "baux.in"
+          fi
+        done < "base-aux.in"
+    fi
+    rm -rf *aux* temp*.dat
+  done < "$3"
+  paste 1_2-1_3-3_2-2_4.dat 1_2-1_3-2_4-4_3.dat 1_2-1_3-3_2-4_3.dat 1_2-3_2-2_4-4_3.dat 1_3-3_2-2_4-4_3.dat | column -s $'\t' -tn > networkFlowNested4-"$1"-"$2".dat
+}
