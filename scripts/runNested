@@ -1,0 +1,116 @@
+#!/bin/bash
+
+#===============================================================================
+#
+#          FILE:  ---
+#
+#         USAGE:  ---
+#
+#   DESCRIPTION:
+#
+#       OPTIONS:  ---
+#  REQUIREMENTS:  ---
+#          BUGS:  ---
+#         NOTES:  ---
+#        AUTHOR:  ---
+#       COMPANY:  ---
+#       VERSION:  ---
+#       CREATED:  ---
+#      REVISION:  Alexandre 12/6/19
+#===============================================================================
+#
+{
+  #$1 FONTE
+  #$2 SORVEDOURO
+  #$3 ARQUIVO
+  contA=1
+  while read line
+  do
+	  cp "$3" base-aux.in
+	  if [ $contA -eq 1 ]
+	  then
+	      read line
+	      ((contA++))
+	  fi
+	  n1A=$(echo "$line" | awk '{print $1}')
+	  n2A=$(echo "$line" | awk '{print $2}')
+	  n3A=$(echo "$line" | awk '{print $3}')
+	  if [[ $n1A != $1 && $n2A != $2 ]]
+	  then
+	      contB=1
+	      while read line
+	      do
+		      cp base-aux.in baux.in
+	        if [ $contB -eq 1 ]
+	        then
+	            read line
+	            ((contB++))
+	        fi
+          n1B=$(echo "$line" | awk '{print $1}')
+	        n2B=$(echo "$line" | awk '{print $2}')
+	        n3B=$(echo "$line" | awk '{print $3}')
+          if [[ $n1B != $1 && $n2B != $2 ]] && [[ $n1A != $n1B || $n2A != $n2B ]]
+	        then
+		          if [ ! -f "$n1B"_"$n2B"-"$n1A"_"$n2A".dat ]
+		          then
+			            zero=0
+			            if (( $n3A < $n3B ))
+			            then
+			                zero=1
+			                count=$n3A
+                  elif (( $n3A > $n3B ))
+                  then
+			              zero=2
+			              count=$n3B
+                  else
+			              zero=3
+			              count=$n3B
+			            fi
+			            cpd=$(( n3A + n3B ))
+			            flA=$n3A
+			            flB=$n3B
+			            jA=$n3A
+			            jB=$n3B
+	                for (( i=$count; i>0; i--))
+                  do
+			              pct=($( awk "BEGIN { print (($jA + $jB) / $cpd ) * 100 }"))
+                    sed -i "s/$n1A $n2A $flA/$n1A $n2A $jA/" baux.in
+			              sed -i "s/$n1B $n2B $flB/$n1B $n2B $jB/" baux.in
+                    ./Ford_Fulkerson < baux.in > temp"$i".dat
+                    flw=($(sed -n 's/^total flow is//p' temp"$i".dat))
+                    echo $pct $'\t' $flw >> "$n1A"_"$n2A"-"$n1B"_"$n2B".dat
+			              flA=$jA
+			              ((jA--))
+			              flB=$jB
+			              ((jB--))
+                  done
+			            if [ $zero -eq 1 ]
+			            then
+                      jA=0
+			                sed -i "/$n1A $n2A $flA/d" baux.in
+                      sed -i "s/$n1B $n2B $flB/$n1B $n2B $jB/" baux.in
+			            elif [ $zero -eq 2 ]
+                  then
+                    jB=0
+			              sed -i "/$n1B $n2B $flB/d" baux.in
+                    sed -i "s/$n1A $n2A $flA/$n1A $n2A $jA/" baux.in
+                  else
+                    jB=0
+                    jA=0
+                    sed -i "/$n1A $n2A $flA/d" baux.in
+                    sed -i "/$n1B $n2B $flB/d" baux.in
+			            fi
+			            pct=($( awk "BEGIN { print (($jA + $jB) / $cpd ) * 100 }"))
+                  ./Ford_Fulkerson < baux.in > temp"$n1A"_"$n2A"-"$n1B"_"$n2B"_0.dat
+                  flw=($(sed -n 's/^total flow is//p' temp"$n1A"_"$n2A"-"$n1B"_"$n2B"_0.dat))
+	                echo $pct $'\t' $flw >> "$n1A"_"$n2A"-"$n1B"_"$n2B".dat
+		          fi
+		          rm -rf baux.in
+		      fi
+	      done < "base-aux.in"
+	  fi
+	  #rm -rf b*aux.in temp*.dat
+  done < "$3"
+  paste 2_3-4_5.dat 2_3-6_7.dat 4_5-6_7.dat | column -s $'\t' -tn > networkFlowNested-"$1"-"$2".dat
+  #paste 1_3-2_4.dat 1_2-1_3.dat 1_2-2_4.dat 1_2-3_2.dat 1_3-3_2.dat 3_2-2_4.dat 1_2-4_3.dat 1_3-4_3.dat 2_4-4_3.dat 3_2-4_3.dat | column -s $'\t' -tn > networkFlowNested-"$1"-"$2".dat
+}
