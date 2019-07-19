@@ -1,0 +1,112 @@
+#!/bin/bash
+
+#===============================================================================
+#
+#          FILE:  ---
+#
+#         USAGE:  ---
+#
+#   DESCRIPTION:
+#
+#       OPTIONS:  ---
+#  REQUIREMENTS:  ---
+#          BUGS:  ---
+#         NOTES:  ---
+#        AUTHOR:  ---
+#       COMPANY:  ---
+#       VERSION:  ---
+#       CREATED:  ---
+#      REVISION:  ---
+#===============================================================================
+{
+  #$1 FONTE
+  #$2 SORVEDOURO
+  #$3 ARQUIVO
+
+  infile=$3
+
+  alfaList=($(awk NR==1 "$infile"))
+  awk NR==2 "$infile" > networkFbk.in
+  awk NR==3 "$infile" >> networkFbk.in
+  awk "NR>3" "$infile" > auxFile.in
+
+  i6=$(awk "BEGIN {print ${alfaList[0]} * (2 + ${alfaList[3]} - ${alfaList[4]} - ${alfaList[5]})}")
+  i7=$(awk "BEGIN {print ${alfaList[0]} * (1 - ${alfaList[1]} - ${alfaList[2]})}")
+
+  while read line
+  do
+    cpt=-1
+    lengthLine=$(echo "$line" | awk '{n=split($0, array, " ")} END{print n }')
+    firstAlfa=$(echo "$line" | awk '{print $3}')
+    if [[ $lengthLine -eq 3 ]]
+    then
+      if [[ $firstAlfa -gt 0 ]]
+      then
+        cpt=$(awk "BEGIN {print ${alfaList[0]} * ${alfaList[$firstAlfa]}}")
+      else
+        cpt=$(awk "BEGIN {print ${alfaList[0]} * (1 - ${alfaList[($firstAlfa * -1)]})}")
+      fi
+    elif [[ $lengthLine -eq 4 ]]
+    then
+      secondAlfa=$(echo "$line" | awk '{print $4}')
+      if [[ $firstAlfa -gt 0 ]]
+      then
+        cpt=$(awk "BEGIN {print ${alfaList[0]} * (1 + ${alfaList[$firstAlfa]} - ${alfaList[$secondAlfa]})}")
+      else
+        cpt=$(awk "BEGIN {print ${alfaList[0]} * (1 - ${alfaList[($firstAlfa * -1)]} - ${alfaList[$secondAlfa]})}")
+      fi
+    elif [[ $lengthLine -eq 5 ]] #prestar atenção nesse bloco
+    then
+      secondAlfa=$(echo "$line" | awk '{print $4}')
+      thirdAlfa=$(echo "$line" | awk '{print $5}')
+      constI7=$(awk "BEGIN {print 1 / (1 + (${alfaList[$secondAlfa]} * $i7)^4)}")
+      constI6=$(awk "BEGIN {print 1 / (1 + (${alfaList[$thirdAlfa]} * $i6)^4)}")
+      if [[ $firstAlfa -gt 0 ]]
+      then
+        cpt=$(awk "BEGIN {print ${alfaList[0]} * ${alfaList[$firstAlfa]} * $constI6 * $constI7}")
+      else
+        cpt=$(awk "BEGIN {print ${alfaList[0]} * (1 - ${alfaList[($firstAlfa * -1)]}) * $constI6 * $constI7}")
+      fi
+      cpt=$(echo $cpt | awk '{printf "%.30f", $1}')
+    else #prestar atenção nesse bloco
+      secondAlfa=$(echo "$line" | awk '{print $4}')
+      thirdAlfa=$(echo "$line" | awk '{print $5}')
+      forthAlfa=$(echo "$line" | awk '{print $6}')
+      constI6=$(awk "BEGIN {print 1 / (1 + (${alfaList[$forthAlfa]} * $i6)^4)}")
+      if [[ $firstAlfa -gt 0 ]]
+      then
+        cpt=$(awk "BEGIN {print ${alfaList[0]} * ${alfaList[$firstAlfa]} * (1 + ${alfaList[$secondAlfa]} - ${alfaList[$thirdAlfa]}) * $constI6}")
+      else
+        cpt=$(awk "BEGIN {print ${alfaList[0]} * (1 - ${alfaList[($firstAlfa * -1)]}) * (1 + ${alfaList[$secondAlfa]} - ${alfaList[$thirdAlfa]}) * $constI6}")
+      fi
+      cpt=$(echo $cpt | awk '{printf "%.30f", $1}')
+    fi
+    n1=$(echo "$line" | awk '{print $1}')
+	  n2=$(echo "$line" | awk '{print $2}')
+    echo $n1 $n2 $cpt >> networkFbk.in
+  done < "auxFile.in"
+  rm -rf aux*
+ ./Ford_Fulkerson < networkFbk.in > networkFlowFbk.dat
+#	  cp "$3" base-aux.in
+#	  n3=$(echo "$line" | awk '{print $3}')
+#	  j=$n3
+#	  total=$n3
+#	  if [[ $n1 != $1 && $n2 != $2 ]]
+#	  then
+#	      for (( i=$total; i>0; i--))
+#        do
+#          pct=($( awk "BEGIN { print ($i / $total ) * 100 }"))
+#          sed -i "s/$n1 $n2 $j/$n1 $n2 $i/" base-aux.in
+#          ./Ford_Fulkerson < base-aux.in > temp"$i".dat
+#          flw=($(sed -n 's/^total flow is//p' temp"$i".dat))
+#          echo $pct $'\t' $flw >> "$n1"_"$n2".dat
+#          j=$i
+#        done
+#	      sed -i "/$n1 $n2 $j/d" base-aux.in
+#        ./Ford_Fulkerson < base-aux.in > temp0.dat
+#        flw=($(sed -n 's/^total flow is//p' temp0.dat))
+#	      echo "0" $'\t' $flw >> "$n1"_"$n2".dat
+#	  fi
+#	  rm -rf base-aux.in temp*.dat
+#  paste 1_3.dat 2_4.dat 1_2.dat 3_2.dat 4_3.dat | column -s $'\t' -tn > networkFlow-"$1"-"$2".dat
+}
