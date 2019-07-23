@@ -1,0 +1,94 @@
+#!/bin/bash
+
+#===============================================================================
+#
+#          FILE:  ---
+#
+#         USAGE:  ---
+#
+#   DESCRIPTION:
+#
+#       OPTIONS:  ---
+#  REQUIREMENTS:  ---
+#          BUGS:  ---
+#         NOTES:  ---
+#        AUTHOR:  ---
+#       COMPANY:  ---
+#       VERSION:  ---
+#       CREATED:  ---
+#      REVISION:  ---
+#===============================================================================
+{
+  #$1 FONTE
+  #$2 SORVEDOURO
+  #$3 ARQUIVO
+
+  infile=$3
+
+  alfaList=($(awk NR==1 "$infile"))
+
+  nDiv=$4
+  const3=$(awk "BEGIN {print ${alfaList[3]} / $nDiv}")
+  const4=$(awk "BEGIN {print (1 - ${alfaList[4]}) / $nDiv}")
+
+  for (( i=$nDiv; i>=0; i--))
+  do
+    if [[ $i -eq 0 ]]
+    then
+        alfaList[3]=0
+        alfaList[4]=1
+    fi
+    awk NR==2 "$infile" > network_"$i".in
+    awk NR==3 "$infile" >> network_"$i".in
+    awk "NR>3" "$infile" > auxFile.in
+    while read line
+    do
+      cpt=-1
+      lengthLine=$(echo "$line" | awk '{n=split($0, array, " ")} END{print n }')
+      firstAlfa=$(echo "$line" | awk '{print $3}')
+      if [[ $lengthLine -eq 3 ]]
+      then
+          if [[ $firstAlfa -gt 0 ]]
+          then
+              cpt=$(awk "BEGIN {print ${alfaList[0]} * ${alfaList[$firstAlfa]}}")
+          else
+            cpt=$(awk "BEGIN {print ${alfaList[0]} * (1 - ${alfaList[($firstAlfa * -1)]})}")
+          fi
+      elif [[ $lengthLine -eq 4 ]]
+      then
+          secondAlfa=$(echo "$line" | awk '{print $4}')
+          if [[ $firstAlfa -gt 0 ]]
+          then
+              cpt=$(awk "BEGIN {print ${alfaList[0]} * (1 + ${alfaList[$firstAlfa]} - ${alfaList[$secondAlfa]})}")
+          else
+            cpt=$(awk "BEGIN {print ${alfaList[0]} * (1 - ${alfaList[($firstAlfa * -1)]} - ${alfaList[$secondAlfa]})}")
+          fi
+      else
+        thirdAlfa=$(echo "$line" | awk '{print $5}')
+        if [[ $firstAlfa -gt 0 ]]
+        then
+            cpt=$(awk "BEGIN {print ${alfaList[0]} * ${alfaList[$firstAlfa]} * (1 + ${alfaList[$secondAlfa]} - ${alfaList[$thirdAlfa]})}")
+        else
+          cpt=$(awk "BEGIN {print ${alfaList[0]} * (1 - ${alfaList[($firstAlfa * -1)]}) * (1 + ${alfaList[$secondAlfa]} - ${alfaList[$thirdAlfa]})}")
+        fi
+      fi
+      cpt=$(echo $cpt | awk '{printf "%.0f", $1}')
+      if [[ $cpt != 0 ]]
+      then
+        n1=$(echo "$line" | awk '{print $1}')
+  	    n2=$(echo "$line" | awk '{print $2}')
+        echo $n1 $n2 $cpt >> network_"$i".in
+      fi
+    done < "auxFile.in"
+#    echo "i" $i "a3" ${alfaList[3]} "a4" ${alfaList[4]}
+#    flw=($(sed -n 's/^total flow is//p' networkFlow_"$i".dat))
+#    echo $pct $'\t' $flw >> "".dat # Criar arquivo com os fluxos separados
+
+    ./Ford_Fulkerson < network_"$i".in > networkFlow_"$i".dat
+    alfaList[3]=$(awk "BEGIN {print ${alfaList[3]} - $const3}")
+    alfaList[4]=$(awk "BEGIN {print ${alfaList[4]} + $const4}")
+
+  done
+  rm -rf aux*
+  paste *.dat | column -s $'\t' -tn > networkNested.dat
+}

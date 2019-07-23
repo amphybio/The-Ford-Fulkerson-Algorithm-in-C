@@ -67,26 +67,4 @@
   done < "auxFile.in"
   rm -rf aux*
  ./Ford_Fulkerson < network.in > networkFlow.dat
-#	  cp "$3" base-aux.in
-#	  n3=$(echo "$line" | awk '{print $3}')
-#	  j=$n3
-#	  total=$n3
-#	  if [[ $n1 != $1 && $n2 != $2 ]]
-#	  then
-#	      for (( i=$total; i>0; i--))
-#        do
-#          pct=($( awk "BEGIN { print ($i / $total ) * 100 }"))
-#          sed -i "s/$n1 $n2 $j/$n1 $n2 $i/" base-aux.in
-#          ./Ford_Fulkerson < base-aux.in > temp"$i".dat
-#          flw=($(sed -n 's/^total flow is//p' temp"$i".dat))
-#          echo $pct $'\t' $flw >> "$n1"_"$n2".dat
-#          j=$i
-#        done
-#	      sed -i "/$n1 $n2 $j/d" base-aux.in
-#        ./Ford_Fulkerson < base-aux.in > temp0.dat
-#        flw=($(sed -n 's/^total flow is//p' temp0.dat))
-#	      echo "0" $'\t' $flw >> "$n1"_"$n2".dat
-#	  fi
-#	  rm -rf base-aux.in temp*.dat
-#  paste 1_3.dat 2_4.dat 1_2.dat 3_2.dat 4_3.dat | column -s $'\t' -tn > networkFlow-"$1"-"$2".dat
 }
