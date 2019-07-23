@@ -89,7 +89,6 @@
                       jA=0
 			                sed -i "/$n1A $n2A $flA/d" baux.in
                       sed -i "s/$n1B $n2B $flB/$n1B $n2B $jB/" baux.in
-<<<<<<< HEAD
 			            elif [ $zero -eq 2 ]
                   then
                     jB=0
@@ -104,30 +103,14 @@
 			            pct=($( awk "BEGIN { print (($jA + $jB) / $cpd ) * 100 }"))
                   ./Ford_Fulkerson < baux.in > temp"$n1A"_"$n2A"-"$n1B"_"$n2B"_0.dat
                   flw=($(sed -n 's/^total flow is//p' temp"$n1A"_"$n2A"-"$n1B"_"$n2B"_0.dat))
-=======
-			            else
-                    jB=0
-			              sed -i "/$n1B $n2B $flB/d" baux.in
-                    sed -i "s/$n1A $n2A $flA/$n1A $n2A $jA/" baux.in
-			            fi
-			            pct=($( awk "BEGIN { print (($jA + $jB) / $cpd ) * 100 }"))
-                  ./Ford_Fulkerson < baux.in > temp0.dat
-                  flw=($(sed -n 's/^total flow is//p' temp0.dat))
->>>>>>> d31f20cbaa7089d350a0e8fd296cd05052792556
 	                echo $pct $'\t' $flw >> "$n1A"_"$n2A"-"$n1B"_"$n2B".dat
 		          fi
 		          rm -rf baux.in
 		      fi
 	      done < "base-aux.in"
 	  fi
-<<<<<<< HEAD
 	  #rm -rf b*aux.in temp*.dat
   done < "$3"
   paste 2_3-4_5.dat 2_3-6_7.dat 4_5-6_7.dat | column -s $'\t' -tn > networkFlowNested-"$1"-"$2".dat
   #paste 1_3-2_4.dat 1_2-1_3.dat 1_2-2_4.dat 1_2-3_2.dat 1_3-3_2.dat 3_2-2_4.dat 1_2-4_3.dat 1_3-4_3.dat 2_4-4_3.dat 3_2-4_3.dat | column -s $'\t' -tn > networkFlowNested-"$1"-"$2".dat
-=======
-	  rm -rf b*aux.in temp*.dat
-  done < "$3"
-  paste 1_3-2_4.dat 1_2-1_3.dat 1_2-2_4.dat 1_2-3_2.dat 1_3-3_2.dat 3_2-2_4.dat 1_2-4_3.dat 1_3-4_3.dat 2_4-4_3.dat 3_2-4_3.dat | column -s $'\t' -tn > networkFlowNested-"$1"-"$2".dat
->>>>>>> d31f20cbaa7089d350a0e8fd296cd05052792556
 }

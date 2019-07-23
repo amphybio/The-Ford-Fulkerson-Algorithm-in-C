@@ -22,5 +22,5 @@
 {
     IN="$1".dat
     OUT="$1".png
-    gnuplot -e "inputfile='$IN'; outputfile='$OUT';" networkFlowTRI.plt
+    gnuplot -e "inputfile='$IN'; outputfile='$OUT';" networkFlow.plt
 }

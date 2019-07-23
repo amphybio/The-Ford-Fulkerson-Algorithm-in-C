@@ -1,4 +1,3 @@
-
 set term png enhanced size 648,400
 set output outputfile
 
