@@ -30,8 +30,8 @@
   awk NR==3 "$infile" >> networkFbk.in
   awk "NR>3" "$infile" > auxFile.in
 
-  i6=$(awk "BEGIN {print ${alfaList[0]} * (2 + ${alfaList[3]} - ${alfaList[4]} - ${alfaList[5]})}")
-  i7=$(awk "BEGIN {print ${alfaList[0]} * (1 - ${alfaList[1]} - ${alfaList[2]})}")
+  a6=$(awk "BEGIN {print ${alfaList[0]} * (2 + ${alfaList[3]} - ${alfaList[4]} - ${alfaList[5]})}")
+  a7=$(awk "BEGIN {print ${alfaList[0]} * (1 - ${alfaList[1]} - ${alfaList[2]})}")
 
   while read line
   do
@@ -55,36 +55,44 @@
       else
         cpt=$(awk "BEGIN {print ${alfaList[0]} * (1 - ${alfaList[($firstAlfa * -1)]} - ${alfaList[$secondAlfa]})}")
       fi
-    elif [[ $lengthLine -eq 5 ]] #prestar atenção nesse bloco
+    elif [[ $lengthLine -eq 5 ]] # <<< AQUI
     then
       secondAlfa=$(echo "$line" | awk '{print $4}')
       thirdAlfa=$(echo "$line" | awk '{print $5}')
-      constI7=$(awk "BEGIN {print 1 / (1 + (${alfaList[$secondAlfa]} * $i7)^4)}")
-      constI6=$(awk "BEGIN {print 1 / (1 + (${alfaList[$thirdAlfa]} * $i6)^4)}")
-      if [[ $firstAlfa -gt 0 ]]
+      if [[ $thirdAlfa -eq "a6" ]]
       then
-        cpt=$(awk "BEGIN {print ${alfaList[0]} * ${alfaList[$firstAlfa]} * $constI6 * $constI7}")
+        beta3=$(awk "BEGIN {print ((${alfaList[$secondAlfa]}-1)^(1/4))/$a6}")
+        constA6=$(awk "BEGIN {print 1 / (1 + ($beta3 * $a6)^4)}")
+        if [[ $firstAlfa -gt 0 ]]
+        then
+          cpt=$(awk "BEGIN {print ${alfaList[0]} * ${alfaList[$firstAlfa]} * $constA6}")
+        else
+          cpt=$(awk "BEGIN {print ${alfaList[0]} * (1 - ${alfaList[($firstAlfa * -1)]}) * $constA6}")
+        fi
       else
-        cpt=$(awk "BEGIN {print ${alfaList[0]} * (1 - ${alfaList[($firstAlfa * -1)]}) * $constI6 * $constI7}")
+        if [[ $firstAlfa -gt 0 ]]
+        then
+          cpt=$(awk "BEGIN {print ${alfaList[0]} * ${alfaList[$firstAlfa]} * (1 + ${alfaList[$secondAlfa]} - ${alfaList[$thirdAlfa]})}")
+        else
+          cpt=$(awk "BEGIN {print ${alfaList[0]} * (1 - ${alfaList[($firstAlfa * -1)]}) * (1 + ${alfaList[$secondAlfa]} - ${alfaList[$thirdAlfa]})}")
+        fi
       fi
-      cpt=$(echo $cpt | awk '{printf "%.30f", $1}')
-    else #prestar atenção nesse bloco
+    else # <<< AQUI
       secondAlfa=$(echo "$line" | awk '{print $4}')
       thirdAlfa=$(echo "$line" | awk '{print $5}')
-      forthAlfa=$(echo "$line" | awk '{print $6}')
-      constI6=$(awk "BEGIN {print 1 / (1 + (${alfaList[$forthAlfa]} * $i6)^4)}")
-      if [[ $firstAlfa -gt 0 ]]
-      then
-        cpt=$(awk "BEGIN {print ${alfaList[0]} * ${alfaList[$firstAlfa]} * (1 + ${alfaList[$secondAlfa]} - ${alfaList[$thirdAlfa]}) * $constI6}")
-      else
-        cpt=$(awk "BEGIN {print ${alfaList[0]} * (1 - ${alfaList[($firstAlfa * -1)]}) * (1 + ${alfaList[$secondAlfa]} - ${alfaList[$thirdAlfa]}) * $constI6}")
-      fi
-      cpt=$(echo $cpt | awk '{printf "%.30f", $1}')
+
+      beta1=$(awk "BEGIN {print ((${alfaList[$secondAlfa]}-1)^(1/4))/$a7}")
+      beta2=$(awk "BEGIN {print ((${alfaList[$thirdAlfa]}-1)^(1/4))/$a6}")
+      constA6=$(awk "BEGIN {print 1 / (1 + ($beta2 * $a6)^4)}")
+      constA7=$(awk "BEGIN {print 1 / (1 + ($beta1 * $a7)^4)}")
+
+      cpt=$(awk "BEGIN {print ${alfaList[0]} * ${alfaList[$firstAlfa]} * $constA6 * $constA7}")
     fi
+    cpt=$(echo $cpt | awk '{printf "%.0f", $1}')
     n1=$(echo "$line" | awk '{print $1}')
 	  n2=$(echo "$line" | awk '{print $2}')
     echo $n1 $n2 $cpt >> networkFbk.in
   done < "auxFile.in"
   rm -rf aux*
- ./Ford_Fulkerson < networkFbk.in > networkFlowFbk.dat
+  ./Ford_Fulkerson < networkFbk.in > networkFlowFbk.dat
 }

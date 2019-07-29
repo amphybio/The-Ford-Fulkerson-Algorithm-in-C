@@ -53,6 +53,7 @@
         cpt=$(awk "BEGIN {print ${alfaList[0]} * (1 - ${alfaList[($firstAlfa * -1)]} - ${alfaList[$secondAlfa]})}")
       fi
     else
+      secondAlfa=$(echo "$line" | awk '{print $4}')
       thirdAlfa=$(echo "$line" | awk '{print $5}')
       if [[ $firstAlfa -gt 0 ]]
       then
